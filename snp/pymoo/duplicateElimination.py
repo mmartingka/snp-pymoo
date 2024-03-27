@@ -1,4 +1,5 @@
 from pymoo.core.duplicate import ElementwiseDuplicateElimination
+import numpy as np
 
 class SNPDuplicateElimination(ElementwiseDuplicateElimination):
 	

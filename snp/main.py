@@ -14,11 +14,11 @@ from pymoo.algorithms.moo.nsga3 import NSGA3
 from pymoo.optimize import minimize
 
 from snp.SNP import SNP
-from sampling import SNPSampling
-from crossover import SNPCrossover
-from mutation import SNPMutation
-from duplicateElimination import SNPDuplicateElimination
-from problem import SNPProblem
+from pymoo.sampling import SNPSampling
+from pymoo.crossover import SNPCrossover
+from pymoo.mutation import SNPMutation
+from pymoo.duplicateElimination import SNPDuplicateElimination
+from pymoo.problem import SNPProblem
 
 
 #"./00.1600.0.antesnp100.txt"

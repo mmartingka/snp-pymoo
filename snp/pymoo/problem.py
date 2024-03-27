@@ -18,12 +18,12 @@ class SNPProblem(ElementwiseProblem):
 
 		
 	def _evaluate(self, x, out, *args, **kwargs):
-		score = bayesian_score(x)
-		aic = logistic_score(x)
+		score = self.bayesian_score(x)
+		aic = self.logistic_score(x)
 		out["F"] = np.array([+ score, + aic], dtype=float)
 
 		
-	def bayesian_score(x):
+	def bayesian_score(self, x):
 	
 		"""
 		"""
@@ -54,14 +54,14 @@ class SNPProblem(ElementwiseProblem):
 				col_sum_table[index] += 1
 		
 		for i in range(comb):
-			score += snp_factorial(observed_values[0][i]) 
-			+ snp_factorial(observed_values[1][i]) 
-			- snp_factorial(col_sum_table[i] + 1)
+			score += self.snp_factorial(observed_values[0][i]) 
+			+ self.snp_factorial(observed_values[1][i]) 
+			- self.snp_factorial(col_sum_table[i] + 1)
 
 		score = np.abs(score)
 		return score
 		
-	def logistic_score(x):
+	def logistic_score(self,x):
 	
 		"""
 		"""
@@ -102,7 +102,7 @@ class SNPProblem(ElementwiseProblem):
 					red = np.sum(w * newdata[:, i] * newdata[:, j])
 					xtwx[i, j] = red
 				
-			xtwx_inv = inv(xtwx)
+			xtwx_inv = np.linalg.inv(xtwx)
 			xwz = np.dot(newdata.T, wz)
 			theta = np.dot(xtwx_inv, xwz)
 			
@@ -117,7 +117,7 @@ class SNPProblem(ElementwiseProblem):
 		aic += 2 * theta_size		
 		return aic
 		
-	def snp_factorial(n):
+	def snp_factorial(self, n):
 		z = 0
 		if n < 0:
 			print("Illegal n, n should be a non-negative number.")

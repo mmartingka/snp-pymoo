@@ -1,5 +1,6 @@
 from pymoo.core.crossover import Crossover
 import random
+import numpy as np
 
 class SNPCrossover(Crossover):
 	"""

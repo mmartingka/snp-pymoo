@@ -1,5 +1,6 @@
 from pymoo.core.mutation import Mutation
 import random
+import numpy as np
 
 class SNPMutation(Mutation):
 	"""
@@ -36,13 +37,13 @@ class SNPMutation(Mutation):
 		for i in range(len(X)):
 			for k in range(sol_size):
 				if random.randint(101) < self.prob_mutation:
-					X[i, 0] = mutate_snp(X[i, 0], problem, k)
-					while buscar_snp(sol_size, X[i, 0][k], X[i, 0]):
-						X[i, 0] = mutate_snp(X[i, 0], problem, k)
+					X[i, 0] = self.mutate_snp(X[i, 0], problem, k)
+					while self.buscar_snp(sol_size, X[i, 0][k], X[i, 0], k):
+						X[i, 0] = self.mutate_snp(X[i, 0], problem, k)
 					X[i,0].sort()
 		return X
 		
-	def mutate_snp(snp, problem, k):
+	def mutate_snp(self, snp, problem, k):
 	
 		"""
 		Mutate a value between [-range_mut, range_mut] for the snp. If it 
@@ -60,7 +61,7 @@ class SNPMutation(Mutation):
 			snp[k] = problem.loci_size - 1
 		return snp
 
-	def buscar_snp(sol_size, snp_value, snp_sol):
+	def buscar_snp(self, sol_size, snp_value, snp_sol, pos):
 	
 		"""
 		Check that the mutation does not generate repeated SNPs. 
