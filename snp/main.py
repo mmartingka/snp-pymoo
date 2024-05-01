@@ -9,97 +9,126 @@ __license__ = "MIT"
 
 import argparse
 from pathlib import Path
+import random
+import numpy as np
 
 from pymoo.algorithms.moo.nsga3 import NSGA3
+from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.util.ref_dirs import get_reference_directions
+
 from pymoo.optimize import minimize
 
-from snp.SNP import SNP
+from SNP import SNP
 from snppymoo.sampling import SNPSampling
 from snppymoo.crossover import SNPCrossover
 from snppymoo.mutation import SNPMutation
+from snppymoo.repair import SNPRepair
 from snppymoo.duplicateElimination import SNPDuplicateElimination
 from snppymoo.problem import SNPProblem
 
 
-#"./00.1600.0.antesnp100.txt"
-def main(filePath, sol_size, lambda_mutation, factor_mutation, prob):
+def main(pop_size, max_iter, mlambda, mfactor, filePath, dim_epi, prob_cross):
 
 	""" Main entry point of the app """
 
 	# Read data from file and store in SNP object
 	snp = SNP(file=filePath)
-	print(snp.sampleSize)
 	
 	sampling = SNPSampling()
 	
-	crossover = SNPCrossover(prob = prob)
-	
+	crossover = SNPCrossover(prob = prob_cross)
+
 	mutation = SNPMutation(
-		prob_mutation = (sol_size*(100+lambda_mutation)), 
-		range_mut = (snp.loci_size*factor_mutation/100))
-	
+		prob_mutation = ((100+mlambda)/dim_epi), 
+		range_mut = (snp.loci_size*mfactor/100)
+		)
+
 	duplication = SNPDuplicateElimination()
-	
+
 	problem = SNPProblem(
-		sol_size = sol_size, 
+		dim_epi = dim_epi, 
 		loci_size = snp.loci_size, 
 		sample_size = snp.sample_size, 
 		data = snp.data)
-	
-	algorithm = NSGA3(
-		pop_size=11, 
+
+	# create the reference directions to be used for the optimization
+	ref_dirs = get_reference_directions("uniform", 2, n_points=12)
+
+	repair = SNPRepair()
+
+	algorithm = NSGA2(
+		#ref_dirs=ref_dirs,
+		pop_size=pop_size, 
 		sampling=sampling, 
 		crossover=crossover,
 		mutation=mutation, 
+		repair=repair,
 		eliminate_duplicates=duplication)
-	
-	res = minimize(problem, algorithm, ('n_gen', 100), seed=1, verbose=False)
+
+	res = minimize(problem, algorithm, ('n_gen', max_iter), 
+				seed=1, verbose=True)
+	print(res.X)
+	print(res.F)
+
 
 
 def parseArguments():
 
 	""" Read arguments from command line """
 	
-	parser = argparse.ArgumentParser(description=
-										"Multi-objective SNP program")
+	parser = argparse.ArgumentParser(
+		description="Multi-objective SNP program")
 	
-	# Required file path positional argument
-	parser.add_argument("file", 
-						metavar="F", 
-						type=Path, 
-						help="Required file path positional argument")
-						
-	# Required solution SNP size argument
-	parser.add_argument("sol_size", 
-						metavar="S", 
+	required = parser.add_argument_group('required arguments')
+	optional = parser.add_argument_group('optional arguments')
+
+	# Population size argument
+	required.add_argument("pop_size", 
 						type=int, 
-						help="Required solution SNP size argument")
+						help="Population size argument")
+	
+	# Maximum number of iterations argument
+	required.add_argument("max_iter", 
+						type=int, 
+						help="Maximum number of iterations argument")
+	
+	# Lamda probability mutation argument
+	required.add_argument("lambda_mutation", 
+						type=int, 
+						help="Lamda probability mutation argument [0-100]")
+	
+	# Factor range mutation argument
+	required.add_argument("factor_mutation", 
+						type=int, 
+						help="Factor range mutation argument (pe. 10)")
+
+	# File path argument
+	required.add_argument("file",
+						type=Path, 
+						help="File path argument (00.1600.0.antesnp100.txt)")
 						
-	# Required lamda probability mutation argument
-	parser.add_argument("lambda_mutation", 
-						metavar="P", 
+	# Solution SNP size argument
+	required.add_argument("dim_epi", 
+						type=int, 
+						help="Solution SNP size argument (2/5/10)")
+						
+	# Probability crossover argument
+	optional.add_argument("prob_cross", 
 						type=float, 
-						help="Required lamda probability mutation argument")
-	
-	# Required factor range mutation argument
-	parser.add_argument("factor_mutation", 
-						metavar="R", 
-						type=float, 
-						help="Required factor range mutation argument")
-	
-	# Non required probability crossover argument
-	parser.add_argument("prob", 
-						metavar="C", 
-						type=float, 
-						required=False,
-						help="Non required probability crossover argument")
+						help="Probability crossover argument (default 1.0)",
+						default=1.0)
 							
 	
-	args = parser.parse_args()
-	return args.file, args.sol_size, args.lambda_mutation, args.factor_mutation, args.prob
+	return parser.parse_args()
+
 
 if __name__ == "__main__":
 
 	""" This is executed when run from the command line """
+	random.seed(1425236234)
+	np.random.seed(1425236234)
 
-	main(parseArguments())
+	args = parseArguments()
+	print(args)
+	main(args.pop_size, args.max_iter, args.lambda_mutation, 
+	  args.factor_mutation, args.file, args.dim_epi, args.prob_cross)

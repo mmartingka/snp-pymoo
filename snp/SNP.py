@@ -8,11 +8,12 @@ class SNP:
 	
 	Attributes:
 		file: Data file path 
-		sample_size: Number of individuals in the sample (rows[1:])
-		loci_size: Number of loci (SNP) of each individual (columns[:-1]) 
-		class_column: Index column where class is store 
-		data: Values retrieved from the file (vector/matrix)
 		SNP_names: First row of the file (names for each SNP - vector)
+		loci_size: Number of loci (SNP) of each individual (columns[:-1]) 
+		sample_size: Number of individuals in the sample (rows[1:])
+		data: Values retrieved from the file (vector/matrix)
+		class_column: Index column where class is store or total number of 
+						data columns
 		number_classes:  Number of individual in each class 
 						(0-No fenotype , 1-Yes fenotype)
 	"""
@@ -34,8 +35,8 @@ class SNP:
 		df_SNP = pd.read_csv(file, sep=',')
 		self.SNP_names = np.asarray(df_SNP.columns[:-1])
 		self.loci_size = len(self.SNP_names)
-		self.data = df_SNP[self.SNP_names].to_numpy()
 		self.sample_size = df_SNP.shape[0]
+		self.data = df_SNP[df_SNP.columns[:]].to_numpy()
 		self.class_column = len(df_SNP.columns)
 		self.number_classes = np.asarray(
 								df_SNP.value_counts(
