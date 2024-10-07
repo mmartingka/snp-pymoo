@@ -4,7 +4,7 @@ import numpy as np
 class SNPDuplicateElimination(ElementwiseDuplicateElimination):
 	
 	"""
-	
+	Compares two SNPs group and retrives true if equals, false otherwise.
 	"""
 
 	def is_equal(self, a, b):

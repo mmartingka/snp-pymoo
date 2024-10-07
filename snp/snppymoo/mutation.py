@@ -62,7 +62,7 @@ class SNPMutation(Mutation):
 	def buscar_snp(self, dim_epi, snp_value, snp_sol, pos):
 	
 		"""
-		Check that the mutation does not generate repeated SNPs. 
+		Check that the mutation does not generate repeated SNPs.
 		"""
 		
 		for i in range(dim_epi):

@@ -14,12 +14,15 @@ class SNPProblem(ElementwiseProblem):
 		data: Values for each SNP on each individual 
 	"""
 	
-	def __init__(self, dim_epi, loci_size, sample_size, data):
-		super().__init__(n_var=1, n_obj=2, n_ieq_constr=0)
-		self.dim_epi = dim_epi
-		self.loci_size = loci_size
-		self.sample_size = sample_size
-		self.data = data
+	def __init__(self, **kwargs):
+		super().__init__(n_var=1, n_obj=2, n_ieq_constr=0,  
+				   elementwise_evaluation=False, **kwargs)
+
+		values = list(kwargs.values())
+		self.dim_epi = values[1]
+		self.loci_size = values[2]
+		self.sample_size = values[3]
+		self.data = values[4]
 
 		
 	def _evaluate(self, x, out, *args, **kwargs):
@@ -87,15 +90,14 @@ class SNPProblem(ElementwiseProblem):
 		n_iter = 0
 		loss = 1
 		lossnew = 0
-		
 		while loss > delta and n_iter < maxiter:
 			lossold = lossnew
 			
 			ypre = np.dot(newdata, theta)
-
-			pi = np.exp(ypre) / (1 + np.exp(ypre))
-			pi[ypre < -708] = 0
-			pi[ypre > 709] = 1
+			ypre2=ypre
+			ypre2[ypre2<-708]=-708
+			ypre2[ypre2>709]=709
+			pi = np.exp(ypre2) / (1 + np.exp(ypre))
 
 			w = pi * (1 - pi)
 			wz = w * ypre + self.data[:, self.loci_size] - pi
@@ -116,7 +118,7 @@ class SNPProblem(ElementwiseProblem):
 			n_iter += 1
 		
 		pre = np.abs(1 - self.data[:, self.loci_size] - pi)
-		aic = -2 * np.sum(np.log(pre))
+		aic = -2 * np.sum(np.log(np.maximum(pre, 0.0000001)))
 			
 		aic += 2 * theta_size		
 		return aic
