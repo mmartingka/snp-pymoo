@@ -15,12 +15,12 @@ class SNPRepair(Repair):
 		# Now repair each indvidiual i
 		for i in range(len(Z)):
         	# The packing plan for i
-			z = Z[i,0]
+			z = Z[i]
 			for j in range(problem.dim_epi):
 				while(self.buscar_snp(problem.dim_epi, z[j], z, j)):
 					z[j]=(z[j]+1)%problem.loci_size	
 				z.sort()
-			Z[i,0] = z
+			Z[i] = z
 		return Z
 	
 	def buscar_snp(self, dim_epi, snp_value, snp_sol, pos):

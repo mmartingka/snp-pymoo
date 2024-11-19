@@ -36,10 +36,10 @@ class SNPMutation(Mutation):
 		for i in range(len(X)):
 			for k in range(dim_epi):
 				if random.randint(0, 100) < self.prob_mutation:
-					X[i, 0] = self.mutate_snp(X[i, 0], problem, k)
-					while self.buscar_snp(dim_epi, X[i, 0][k], X[i, 0], k):
-						X[i, 0] = self.mutate_snp(X[i, 0], problem, k)
-					X[i,0].sort()
+					X[i] = self.mutate_snp(X[i], problem, k)
+					while self.buscar_snp(dim_epi, X[i][k], X[i], k):
+						X[i] = self.mutate_snp(X[i], problem, k)
+					X[i].sort()
 		return X
 		
 	def mutate_snp(self, snp, problem, k):

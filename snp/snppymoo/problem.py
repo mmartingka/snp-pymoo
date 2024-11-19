@@ -14,20 +14,20 @@ class SNPProblem(ElementwiseProblem):
 		data: Values for each SNP on each individual 
 	"""
 	
-	def __init__(self, **kwargs):
-		super().__init__(n_var=1, n_obj=2, n_ieq_constr=0,  
+	def __init__(self, n_var=1, **kwargs):
+		super().__init__(n_var=n_var, n_obj=2, n_ieq_constr=0,  
 				   elementwise_evaluation=False, **kwargs)
 
 		values = list(kwargs.values())
-		self.dim_epi = values[1]
-		self.loci_size = values[2]
-		self.sample_size = values[3]
-		self.data = values[4]
+		self.dim_epi = n_var
+		self.loci_size = values[0]
+		self.sample_size = values[1]
+		self.data = values[2]
 
 		
 	def _evaluate(self, x, out, *args, **kwargs):
-		score = self.bayesian_score(x[0])
-		aic = self.logistic_score(x[0])
+		score = self.bayesian_score(x)
+		aic = self.logistic_score(x)
 		out["F"] = np.array([+ score, + aic], dtype=float)
 
 		

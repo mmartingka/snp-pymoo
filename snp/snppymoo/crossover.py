@@ -31,17 +31,17 @@ class SNPCrossover(Crossover):
 
 		# The output with the shape (n_offsprings, n_matings, n_var)
 		# As the number of parents and offsprings are equal it keeps X's shape
-		Y = np.full_like(X, None, dtype=object)
+		Y = np.full_like(X, -1, dtype=int)
 
 		dim_epi = problem.dim_epi
 
 		for m in range(n_matings):
         	# Get the first and the second parent
-			a, b = X[0, m, 0], X[1, m, 0]
+			a, b = X[0, m], X[1, m]
 
-			# prepare the offsprings
-			off_a = np.full(dim_epi, None, dtype=object)
-			off_b = np.full(dim_epi, None, dtype=object)
+			# Prepare the offsprings
+			off_a = np.full(dim_epi, -1, dtype=int)
+			off_b = np.full(dim_epi, -1, dtype=int)
 
 			if random.randint(0, 100) < self.prob:
 				if dim_epi>2:
@@ -61,8 +61,8 @@ class SNPCrossover(Crossover):
 				off_a = np.asarray(a)
 				off_b = np.asarray(b)
 
-			Y[0, m, 0] = np.sort(off_a)
-			Y[1, m, 0] = np.sort(off_b)
+			Y[0, m] = np.sort(off_a)
+			Y[1, m] = np.sort(off_b)
 
 		return Y
 		

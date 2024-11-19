@@ -12,7 +12,7 @@ class SNPSampling(Sampling):
 	def _do(self, problem, n_samples, **kwargs):
 
 		# Store samples in array
-		samples = np.full((n_samples, 1), None, dtype=object)
+		samples = np.full((n_samples, problem.dim_epi), -1, dtype=int)
 
 		for i in range(n_samples): 
 			# Store indices in array
@@ -32,6 +32,6 @@ class SNPSampling(Sampling):
 				index_end = index_end + 1	
 			
 			indices = np.array(chosen_indices, dtype=object)
-			samples[i, 0] = indices
+			samples[i] = indices
 		return samples
 		
