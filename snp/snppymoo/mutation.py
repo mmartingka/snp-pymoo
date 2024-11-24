@@ -30,42 +30,23 @@ class SNPMutation(Mutation):
 		selected probability mutation. If so, the process is done until a good
 		mutation is performed (no repeted and order SNPs).  
 		"""
-		dim_epi = problem.dim_epi
-
-		# For each individual
-		for i in range(len(X)):
-			for k in range(dim_epi):
-				if random.randint(0, 100) < self.prob_mutation:
-					X[i] = self.mutate_snp(X[i], problem, k)
-					while self.buscar_snp(dim_epi, X[i][k], X[i], k):
-						X[i] = self.mutate_snp(X[i], problem, k)
-					X[i].sort()
+		for i in range(len(X)):  # Iterate through each individual
+			for k in range(problem.dim_epi):  # Iterate through each SNP
+				if np.random.rand() * 100 < self.prob_mutation:  # Apply mutation with probability
+					X[i][k] = self.mutate_snp(X[i][k], problem)
 		return X
-		
-	def mutate_snp(self, snp, problem, k):
-	
+
+	def mutate_snp(self, snp_value, problem):
 		"""
 		Mutate a value between [-range_mut, range_mut] for the snp. If it 
 		exceeds the boundaries of 0 or the size of loci, then the mutation 
-		value will be these respective edges.
-		"""
+		value will be these respective edges.        """
 		mut = 0
-		while mut == 0:
+		while mut == 0:  # Ensure mutation is non-zero
 			mut = np.random.randint(-self.range_mut, self.range_mut)
-		snp[k] += int(mut)
-		if snp[k] < 0:
-			snp[k] = 0
-		elif snp[k] > problem.loci_size - 1:
-			snp[k] = problem.loci_size - 1
-		return snp
 
-	def buscar_snp(self, dim_epi, snp_value, snp_sol, pos):
-	
-		"""
-		Check that the mutation does not generate repeated SNPs.
-		"""
+		new_value = snp_value + mut
+		# Ensure the value stays within the valid range
+		new_value = max(0, min(new_value, problem.loci_size - 1))
+		return new_value
 		
-		for i in range(dim_epi):
-			if snp_value == snp_sol[i] and pos != i:
-				return True
-		return False
